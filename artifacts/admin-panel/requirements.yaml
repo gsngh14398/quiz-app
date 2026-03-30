@@ -1,0 +1,13 @@
+packages:
+  "recharts": "For dashboard statistics charts"
+  "date-fns": "For formatting dates in tables"
+  "clsx": "For conditional tailwind classes"
+  "tailwind-merge": "For conditional tailwind classes"
+  "@tanstack/react-query": "Already in stack, explicitly ensuring version"
+  "lucide-react": "For icons"
+
+images: []
+
+notes:
+  - Admin token is stored in localStorage as 'adminToken'
+  - Generated api-client-react hooks are used for all data fetching
