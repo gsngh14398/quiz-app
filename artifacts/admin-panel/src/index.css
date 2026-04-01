@@ -2,9 +2,9 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
-@theme inline {
-  --font-sans: 'Inter', sans-serif;
-  --font-display: 'Outfit', sans-serif;
+@theme {
+  --font-sans: "Inter", sans-serif;
+  --font-display: "Outfit", sans-serif;
 
   --color-background: hsl(var(--background));
   --color-foreground: hsl(var(--foreground));
@@ -41,42 +41,42 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
-:root {
-  /* DARK MODE PROFESSIONAL THEME */
-  --background: 240 10% 4%;
-  --foreground: 0 0% 98%;
-  
-  --card: 240 10% 6%;
-  --card-foreground: 0 0% 98%;
-  --card-border: 240 10% 12%;
-  
-  --popover: 240 10% 6%;
-  --popover-foreground: 0 0% 98%;
-  --popover-border: 240 10% 12%;
-  
-  --primary: 243 75% 59%; /* Vibrant Indigo */
-  --primary-foreground: 0 0% 100%;
-  
-  --secondary: 240 10% 12%;
-  --secondary-foreground: 0 0% 98%;
-  
-  --muted: 240 10% 12%;
-  --muted-foreground: 240 5% 65%;
-  
-  --accent: 240 10% 16%;
-  --accent-foreground: 0 0% 98%;
-  
-  --destructive: 0 84% 60%;
-  --destructive-foreground: 0 0% 98%;
-  
-  --border: 240 10% 15%;
-  --input: 240 10% 15%;
-  --ring: 243 75% 59%;
-  
-  --radius: 0.75rem;
-}
-
 @layer base {
+  :root {
+    /* DARK MODE PROFESSIONAL THEME */
+    --background: 240 10% 4%;
+    --foreground: 0 0% 98%;
+    
+    --card: 240 10% 6%;
+    --card-foreground: 0 0% 98%;
+    --card-border: 240 10% 12%;
+    
+    --popover: 240 10% 6%;
+    --popover-foreground: 0 0% 98%;
+    --popover-border: 240 10% 12%;
+    
+    --primary: 243 75% 59%; /* Vibrant Indigo */
+    --primary-foreground: 0 0% 100%;
+    
+    --secondary: 240 10% 12%;
+    --secondary-foreground: 0 0% 98%;
+    
+    --muted: 240 10% 12%;
+    --muted-foreground: 240 5% 65%;
+    
+    --accent: 240 10% 16%;
+    --accent-foreground: 0 0% 98%;
+    
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    
+    --border: 240 10% 15%;
+    --input: 240 10% 15%;
+    --ring: 243 75% 59%;
+    
+    --radius: 0.75rem;
+  }
+
   * {
     @apply border-border;
   }
@@ -110,7 +110,7 @@
 /* Subtle grid pattern background for visual interest */
 .bg-grid-pattern {
   background-image: 
-    linear-gradient(to right, hsl(var(--border)/0.3) 1px, transparent 1px),
-    linear-gradient(to bottom, hsl(var(--border)/0.3) 1px, transparent 1px);
+    linear-gradient(to right, hsl(var(--border) / 0.3) 1px, transparent 1px),
+    linear-gradient(to bottom, hsl(var(--border) / 0.3) 1px, transparent 1px);
   background-size: 40px 40px;
 }
