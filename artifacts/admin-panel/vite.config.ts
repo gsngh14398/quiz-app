@@ -17,16 +17,16 @@ export default defineConfig({
     alias: {
       "@": path.resolve(__dirname, "src"),
       "@assets": path.resolve(__dirname, "../../attached_assets"),
+      // Yeh line Vite ko batayegi ki workspace package kahan hai:
+      "@workspace/api-client-react": path.resolve(__dirname, "../api-client-react")
     },
-    // Dedupe helps reduce bundle size and memory usage
     dedupe: ["react", "react-dom"],
   },
   root: path.resolve(__dirname),
   build: {
     outDir: path.resolve(__dirname, "dist"),
     emptyOutDir: true,
-    // Add these optimizations to prevent Vercel silent crashes
-    sourcemap: false, // Disabling sourcemaps saves a LOT of memory during build
+    sourcemap: false, 
     chunkSizeWarningLimit: 1000, 
     rollupOptions: {
       output: {
