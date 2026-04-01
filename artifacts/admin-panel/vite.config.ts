@@ -17,16 +17,19 @@ export default defineConfig({
     alias: {
       "@": path.resolve(__dirname, "src"),
       "@assets": path.resolve(__dirname, "../../attached_assets"),
-      // Yeh line lib folder ke andar se api-client-react ko dhoondhegi
-      "@workspace/api-client-react": path.resolve(__dirname, "../../lib/api-client-react")
+      "@workspace/api-client-react": path.resolve(__dirname, "../../lib/api-client-react"),
+      
+      // JAB BHI KOI BAHAR KI FILE PACKAGES MAANGE, TOH YAHAN SE DENA:
+      "@tanstack/react-query": path.resolve(__dirname, "node_modules/@tanstack/react-query"),
+      "zod": path.resolve(__dirname, "node_modules/zod")
     },
-    dedupe: ["react", "react-dom"],
+    // Dedupe ensures that only one copy of these packages is loaded
+    dedupe: ["react", "react-dom", "@tanstack/react-query", "zod"],
   },
   root: path.resolve(__dirname),
   build: {
     outDir: path.resolve(__dirname, "dist"),
     emptyOutDir: true,
-    // Vercel ki memory limits ke liye optimizations
     sourcemap: false, 
     minify: false, 
     chunkSizeWarningLimit: 2000, 
