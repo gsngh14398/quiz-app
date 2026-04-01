@@ -1,0 +1,1919 @@
+openapi: 3.1.0
+info:
+  title: Api
+  version: 0.1.0
+  description: Quiz Elite API specification
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+  - name: auth
+  - name: admin
+  - name: categories
+  - name: subcategories
+  - name: quizzes
+  - name: questions
+  - name: quiz
+  - name: leaderboard
+  - name: streak
+  - name: spin
+  - name: redeem
+  - name: points
+  - name: notes
+  - name: competitions
+  - name: users
+
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  # Auth
+  /auth/register:
+    post:
+      operationId: registerUser
+      tags: [auth]
+      summary: Register user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterRequest"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+
+  /auth/login:
+    post:
+      operationId: loginUser
+      tags: [auth]
+      summary: Login user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+
+  /auth/me:
+    get:
+      operationId: getMe
+      tags: [auth]
+      summary: Get current user
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  /auth/profile:
+    put:
+      operationId: updateProfile
+      tags: [auth]
+      summary: Update user profile
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateProfileRequest"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+  # Admin Auth
+  /admin/login:
+    post:
+      operationId: adminLogin
+      tags: [admin]
+      summary: Admin login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminAuthResponse"
+
+  /admin/me:
+    get:
+      operationId: getAdminMe
+      tags: [admin]
+      summary: Get current admin
+      security:
+        - adminAuth: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminUser"
+
+  /admin/stats:
+    get:
+      operationId: getAdminStats
+      tags: [admin]
+      summary: Get admin dashboard stats
+      security:
+        - adminAuth: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminStats"
+
+  # Categories
+  /categories:
+    get:
+      operationId: getCategories
+      tags: [categories]
+      summary: Get all categories
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Category"
+    post:
+      operationId: createCategory
+      tags: [categories]
+      summary: Create category
+      security:
+        - adminAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CategoryInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Category"
+
+  /categories/{id}:
+    put:
+      operationId: updateCategory
+      tags: [categories]
+      summary: Update category
+      security:
+        - adminAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CategoryInput"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Category"
+    delete:
+      operationId: deleteCategory
+      tags: [categories]
+      summary: Delete category
+      security:
+        - adminAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  # Subcategories
+  /subcategories:
+    get:
+      operationId: getSubcategories
+      tags: [subcategories]
+      summary: Get subcategories
+      parameters:
+        - name: categoryId
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Subcategory"
+    post:
+      operationId: createSubcategory
+      tags: [subcategories]
+      summary: Create subcategory
+      security:
+        - adminAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SubcategoryInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Subcategory"
+
+  /subcategories/{id}:
+    put:
+      operationId: updateSubcategory
+      tags: [subcategories]
+      summary: Update subcategory
+      security:
+        - adminAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SubcategoryInput"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Subcategory"
+    delete:
+      operationId: deleteSubcategory
+      tags: [subcategories]
+      summary: Delete subcategory
+      security:
+        - adminAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  # Quizzes
+  /quizzes:
+    get:
+      operationId: getQuizzes
+      tags: [quizzes]
+      summary: Get quizzes
+      parameters:
+        - name: subcategoryId
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Quiz"
+    post:
+      operationId: createQuiz
+      tags: [quizzes]
+      summary: Create quiz
+      security:
+        - adminAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/QuizInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Quiz"
+
+  /quizzes/{id}:
+    get:
+      operationId: getQuizById
+      tags: [quizzes]
+      summary: Get quiz by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Quiz"
+    put:
+      operationId: updateQuiz
+      tags: [quizzes]
+      summary: Update quiz
+      security:
+        - adminAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/QuizInput"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Quiz"
+    delete:
+      operationId: deleteQuiz
+      tags: [quizzes]
+      summary: Delete quiz
+      security:
+        - adminAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  /quizzes/{quizId}/questions:
+    get:
+      operationId: getQuizQuestions
+      tags: [quizzes]
+      summary: Get questions for a quiz
+      parameters:
+        - name: quizId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Question"
+
+  # Questions
+  /questions:
+    get:
+      operationId: getQuestions
+      tags: [questions]
+      summary: Get all questions
+      parameters:
+        - name: categoryId
+          in: query
+          schema:
+            type: string
+        - name: subcategoryId
+          in: query
+          schema:
+            type: string
+        - name: quizId
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+        - name: offset
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QuestionsResponse"
+    post:
+      operationId: createQuestion
+      tags: [questions]
+      summary: Create question
+      security:
+        - adminAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/QuestionInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Question"
+
+  /questions/{id}:
+    put:
+      operationId: updateQuestion
+      tags: [questions]
+      summary: Update question
+      security:
+        - adminAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/QuestionInput"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Question"
+    delete:
+      operationId: deleteQuestion
+      tags: [questions]
+      summary: Delete question
+      security:
+        - adminAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  # Quiz submission
+  /quiz/submit:
+    post:
+      operationId: submitQuiz
+      tags: [quiz]
+      summary: Submit quiz answers
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/QuizSubmitRequest"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QuizSubmitResponse"
+
+  # Leaderboard
+  /leaderboard:
+    get:
+      operationId: getLeaderboard
+      tags: [leaderboard]
+      summary: Get leaderboard
+      parameters:
+        - name: period
+          in: query
+          schema:
+            type: string
+            enum: [daily, weekly, global]
+            default: global
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LeaderboardEntry"
+
+  # Streak
+  /streak:
+    get:
+      operationId: getStreak
+      tags: [streak]
+      summary: Get user streak
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StreakResponse"
+
+  # Spin Wheel
+  /spin:
+    post:
+      operationId: spin
+      tags: [spin]
+      summary: Spin the wheel
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SpinResponse"
+
+  /spin/can-spin:
+    get:
+      operationId: canSpin
+      tags: [spin]
+      summary: Check if user can spin
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CanSpinResponse"
+
+  # Redeem
+  /rewards:
+    get:
+      operationId: getRewards
+      tags: [redeem]
+      summary: Get available rewards
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RedeemGift"
+    post:
+      operationId: createReward
+      tags: [redeem]
+      summary: Create reward
+      security:
+        - adminAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RedeemGiftInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RedeemGift"
+
+  /rewards/{id}:
+    delete:
+      operationId: deleteReward
+      tags: [redeem]
+      summary: Delete reward
+      security:
+        - adminAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  /redeem:
+    post:
+      operationId: submitRedeem
+      tags: [redeem]
+      summary: Submit redeem request
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RedeemRequest"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RedeemRequestResponse"
+    get:
+      operationId: getAllRedeemRequests
+      tags: [redeem]
+      summary: Get all redeem requests (admin)
+      security:
+        - adminAuth: []
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, approved, rejected]
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RedeemRequestResponse"
+
+  /redeem/my:
+    get:
+      operationId: getMyRedeemHistory
+      tags: [redeem]
+      summary: Get my redeem history
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RedeemRequestResponse"
+
+  /redeem/{id}/status:
+    put:
+      operationId: updateRedeemStatus
+      tags: [redeem]
+      summary: Update redeem request status
+      security:
+        - adminAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateRedeemStatusRequest"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RedeemRequestResponse"
+
+  # Points
+  /points/history:
+    get:
+      operationId: getPointsHistory
+      tags: [points]
+      summary: Get user points history
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PointsHistoryEntry"
+
+  # Content Categories & Notes
+  /content-categories:
+    get:
+      operationId: getContentCategories
+      tags: [notes]
+      summary: Get content categories
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ContentCategory"
+    post:
+      operationId: createContentCategory
+      tags: [notes]
+      summary: Create content category
+      security:
+        - adminAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContentCategoryInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContentCategory"
+
+  /content-categories/{id}:
+    put:
+      operationId: updateContentCategory
+      tags: [notes]
+      summary: Update content category
+      security:
+        - adminAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContentCategoryInput"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContentCategory"
+    delete:
+      operationId: deleteContentCategory
+      tags: [notes]
+      summary: Delete content category
+      security:
+        - adminAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  /notes:
+    get:
+      operationId: getNotes
+      tags: [notes]
+      summary: Get notes
+      parameters:
+        - name: contentCategoryId
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Note"
+    post:
+      operationId: createNote
+      tags: [notes]
+      summary: Create note
+      security:
+        - adminAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NoteInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Note"
+
+  /notes/{id}:
+    put:
+      operationId: updateNote
+      tags: [notes]
+      summary: Update note
+      security:
+        - adminAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NoteInput"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Note"
+    delete:
+      operationId: deleteNote
+      tags: [notes]
+      summary: Delete note
+      security:
+        - adminAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  # Competitions
+  /competitions:
+    get:
+      operationId: getCompetitions
+      tags: [competitions]
+      summary: Get competitions
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Competition"
+    post:
+      operationId: createCompetition
+      tags: [competitions]
+      summary: Create competition
+      security:
+        - adminAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CompetitionInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Competition"
+
+  /competitions/{id}:
+    put:
+      operationId: updateCompetition
+      tags: [competitions]
+      summary: Update competition
+      security:
+        - adminAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CompetitionInput"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Competition"
+    delete:
+      operationId: deleteCompetition
+      tags: [competitions]
+      summary: Delete competition
+      security:
+        - adminAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  /competitions/{id}/join:
+    post:
+      operationId: joinCompetition
+      tags: [competitions]
+      summary: Join competition
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  /competitions/{id}/submit:
+    post:
+      operationId: submitCompetition
+      tags: [competitions]
+      summary: Submit competition result
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CompetitionSubmitRequest"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  /competitions/{id}/leaderboard:
+    get:
+      operationId: getCompetitionLeaderboard
+      tags: [competitions]
+      summary: Get competition leaderboard
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CompetitionLeaderboardEntry"
+
+  /competitions/{id}/my-entry:
+    get:
+      operationId: getMyCompetitionEntry
+      tags: [competitions]
+      summary: Get my competition entry
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CompetitionEntry"
+
+  # Users (admin)
+  /users:
+    get:
+      operationId: getUsers
+      tags: [users]
+      summary: Get all users (admin)
+      security:
+        - adminAuth: []
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+        - name: offset
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UsersResponse"
+
+  /users/{id}/status:
+    put:
+      operationId: updateUserStatus
+      tags: [users]
+      summary: Update user status
+      security:
+        - adminAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateUserStatusRequest"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+    adminAuth:
+      type: http
+      scheme: bearer
+
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required: [status]
+
+    SuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+      required: [success]
+
+    # Auth
+    RegisterRequest:
+      type: object
+      properties:
+        email:
+          type: string
+        name:
+          type: string
+        password:
+          type: string
+        referralCode:
+          type: string
+        deviceId:
+          type: string
+      required: [email, name, password]
+
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+      required: [email, password]
+
+    AuthResponse:
+      type: object
+      properties:
+        token:
+          type: string
+        user:
+          $ref: "#/components/schemas/User"
+      required: [token, user]
+
+    AdminAuthResponse:
+      type: object
+      properties:
+        token:
+          type: string
+        admin:
+          $ref: "#/components/schemas/AdminUser"
+      required: [token, admin]
+
+    UpdateProfileRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        phone:
+          type: string
+        avatar:
+          type: string
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+        name:
+          type: string
+        phone:
+          type: string
+          nullable: true
+        avatar:
+          type: string
+          nullable: true
+        points:
+          type: integer
+        referralCode:
+          type: string
+          nullable: true
+        isActive:
+          type: boolean
+        createdAt:
+          type: string
+        lastLogin:
+          type: string
+          nullable: true
+      required: [id, email, name, points, isActive, createdAt]
+
+    AdminUser:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+        name:
+          type: string
+        role:
+          type: string
+        createdAt:
+          type: string
+      required: [id, email, name, role, createdAt]
+
+    AdminStats:
+      type: object
+      properties:
+        totalUsers:
+          type: integer
+        activeToday:
+          type: integer
+        quizzesPlayedToday:
+          type: integer
+        totalPointsDistributed:
+          type: integer
+        pendingRedeems:
+          type: integer
+        totalRedeemPoints:
+          type: integer
+      required: [totalUsers, activeToday, quizzesPlayedToday, totalPointsDistributed, pendingRedeems, totalRedeemPoints]
+
+    # Categories
+    Category:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        icon:
+          type: string
+        color:
+          type: string
+        active:
+          type: boolean
+        questionCount:
+          type: integer
+        createdAt:
+          type: string
+      required: [id, name, icon, color, active, questionCount, createdAt]
+
+    CategoryInput:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        icon:
+          type: string
+        color:
+          type: string
+        active:
+          type: boolean
+      required: [name]
+
+    # Subcategories
+    Subcategory:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        categoryId:
+          type: string
+        categoryName:
+          type: string
+        icon:
+          type: string
+        color:
+          type: string
+        active:
+          type: boolean
+        sortOrder:
+          type: integer
+        createdAt:
+          type: string
+      required: [id, name, categoryId, icon, color, active, sortOrder, createdAt]
+
+    SubcategoryInput:
+      type: object
+      properties:
+        name:
+          type: string
+        categoryId:
+          type: string
+        icon:
+          type: string
+        color:
+          type: string
+        active:
+          type: boolean
+        sortOrder:
+          type: integer
+      required: [name, categoryId]
+
+    # Quizzes
+    Quiz:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+          nullable: true
+        subcategoryId:
+          type: string
+        subcategoryName:
+          type: string
+        categoryName:
+          type: string
+        categoryId:
+          type: string
+        difficulty:
+          type: string
+        timeLimit:
+          type: integer
+          nullable: true
+        pointsPerQuestion:
+          type: integer
+        totalQuestions:
+          type: integer
+        active:
+          type: boolean
+        createdAt:
+          type: string
+      required: [id, title, subcategoryId, difficulty, pointsPerQuestion, totalQuestions, active, createdAt]
+
+    QuizInput:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        subcategoryId:
+          type: string
+        difficulty:
+          type: string
+        timeLimit:
+          type: integer
+        pointsPerQuestion:
+          type: integer
+        totalQuestions:
+          type: integer
+        active:
+          type: boolean
+      required: [title, subcategoryId]
+
+    # Questions
+    Question:
+      type: object
+      properties:
+        id:
+          type: string
+        categoryId:
+          type: string
+        subcategoryId:
+          type: string
+          nullable: true
+        quizId:
+          type: string
+          nullable: true
+        question:
+          type: string
+        options:
+          type: array
+          items:
+            type: string
+        correctAnswer:
+          type: integer
+        explanation:
+          type: string
+          nullable: true
+        difficulty:
+          type: string
+        active:
+          type: boolean
+        createdAt:
+          type: string
+      required: [id, categoryId, question, options, correctAnswer, difficulty, active, createdAt]
+
+    QuestionInput:
+      type: object
+      properties:
+        categoryId:
+          type: string
+        subcategoryId:
+          type: string
+        quizId:
+          type: string
+        question:
+          type: string
+        options:
+          type: array
+          items:
+            type: string
+        correctAnswer:
+          type: integer
+        explanation:
+          type: string
+        difficulty:
+          type: string
+        active:
+          type: boolean
+      required: [categoryId, question, options, correctAnswer]
+
+    QuestionsResponse:
+      type: object
+      properties:
+        questions:
+          type: array
+          items:
+            $ref: "#/components/schemas/Question"
+        total:
+          type: integer
+      required: [questions, total]
+
+    # Quiz submission
+    QuizSubmitRequest:
+      type: object
+      properties:
+        categoryId:
+          type: string
+        quizId:
+          type: string
+        answers:
+          type: array
+          items:
+            type: integer
+        timeTaken:
+          type: integer
+      required: [categoryId, answers, timeTaken]
+
+    QuizSubmitResponse:
+      type: object
+      properties:
+        quizResult:
+          type: object
+          properties:
+            score:
+              type: integer
+            totalQuestions:
+              type: integer
+            pointsEarned:
+              type: integer
+          required: [score, totalQuestions, pointsEarned]
+        results:
+          type: array
+          items:
+            type: object
+            properties:
+              questionId:
+                type: string
+              isCorrect:
+                type: boolean
+              correctAnswer:
+                type: integer
+              explanation:
+                type: string
+                nullable: true
+            required: [questionId, isCorrect, correctAnswer]
+        pointsEarned:
+          type: integer
+      required: [quizResult, results, pointsEarned]
+
+    # Leaderboard
+    LeaderboardEntry:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        avatar:
+          type: string
+          nullable: true
+        points:
+          type: integer
+        rank:
+          type: integer
+        periodPoints:
+          type: integer
+      required: [id, name, points, rank, periodPoints]
+
+    # Streak
+    StreakResponse:
+      type: object
+      properties:
+        currentStreak:
+          type: integer
+        longestStreak:
+          type: integer
+      required: [currentStreak, longestStreak]
+
+    # Spin
+    SpinResponse:
+      type: object
+      properties:
+        rewardType:
+          type: string
+        rewardAmount:
+          type: integer
+        points:
+          type: integer
+      required: [rewardType, rewardAmount, points]
+
+    CanSpinResponse:
+      type: object
+      properties:
+        canSpin:
+          type: boolean
+      required: [canSpin]
+
+    # Redeem
+    RedeemGift:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        pointsRequired:
+          type: integer
+        rewardType:
+          type: string
+        active:
+          type: boolean
+        createdAt:
+          type: string
+      required: [id, name, pointsRequired, rewardType, active, createdAt]
+
+    RedeemGiftInput:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        pointsRequired:
+          type: integer
+        rewardType:
+          type: string
+        active:
+          type: boolean
+      required: [name, pointsRequired, rewardType]
+
+    RedeemRequest:
+      type: object
+      properties:
+        points:
+          type: integer
+        rewardType:
+          type: string
+        rewardDetails:
+          type: object
+          additionalProperties:
+            type: string
+      required: [points, rewardType, rewardDetails]
+
+    RedeemRequestResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        points:
+          type: integer
+        rewardType:
+          type: string
+        rewardDetails:
+          type: object
+          additionalProperties:
+            type: string
+        status:
+          type: string
+        adminNotes:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+        user:
+          $ref: "#/components/schemas/User"
+      required: [id, userId, points, rewardType, rewardDetails, status, createdAt]
+
+    UpdateRedeemStatusRequest:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [approved, rejected]
+        adminNotes:
+          type: string
+      required: [status]
+
+    # Points
+    PointsHistoryEntry:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        amount:
+          type: integer
+        type:
+          type: string
+        description:
+          type: string
+        createdAt:
+          type: string
+      required: [id, userId, amount, type, description, createdAt]
+
+    # Notes
+    ContentCategory:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        icon:
+          type: string
+        active:
+          type: boolean
+        createdAt:
+          type: string
+      required: [id, name, icon, active, createdAt]
+
+    ContentCategoryInput:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        icon:
+          type: string
+        active:
+          type: boolean
+      required: [name]
+
+    Note:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        content:
+          type: string
+        contentCategoryId:
+          type: string
+        active:
+          type: boolean
+        createdAt:
+          type: string
+      required: [id, title, content, contentCategoryId, active, createdAt]
+
+    NoteInput:
+      type: object
+      properties:
+        title:
+          type: string
+        content:
+          type: string
+        contentCategoryId:
+          type: string
+        active:
+          type: boolean
+      required: [title, content, contentCategoryId]
+
+    # Competitions
+    Competition:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+          nullable: true
+        quizId:
+          type: string
+          nullable: true
+        prizePool:
+          type: integer
+        startDate:
+          type: string
+        endDate:
+          type: string
+        active:
+          type: boolean
+        maxParticipants:
+          type: integer
+          nullable: true
+        createdAt:
+          type: string
+      required: [id, title, prizePool, startDate, endDate, active, createdAt]
+
+    CompetitionInput:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        quizId:
+          type: string
+        prizePool:
+          type: integer
+        startDate:
+          type: string
+        endDate:
+          type: string
+        active:
+          type: boolean
+        maxParticipants:
+          type: integer
+      required: [title, prizePool, startDate, endDate]
+
+    CompetitionSubmitRequest:
+      type: object
+      properties:
+        score:
+          type: integer
+        totalQuestions:
+          type: integer
+        timeTaken:
+          type: integer
+        pointsEarned:
+          type: integer
+      required: [score, totalQuestions, timeTaken, pointsEarned]
+
+    CompetitionLeaderboardEntry:
+      type: object
+      properties:
+        userId:
+          type: string
+        userName:
+          type: string
+        score:
+          type: integer
+        timeTaken:
+          type: integer
+        rank:
+          type: integer
+      required: [userId, userName, score, timeTaken, rank]
+
+    CompetitionEntry:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        competitionId:
+          type: string
+        score:
+          type: integer
+          nullable: true
+        timeTaken:
+          type: integer
+          nullable: true
+        rank:
+          type: integer
+          nullable: true
+        joinedAt:
+          type: string
+      required: [id, userId, competitionId, joinedAt]
+
+    # Users (admin)
+    UsersResponse:
+      type: object
+      properties:
+        users:
+          type: array
+          items:
+            $ref: "#/components/schemas/User"
+        total:
+          type: integer
+      required: [users, total]
+
+    UpdateUserStatusRequest:
+      type: object
+      properties:
+        isActive:
+          type: boolean
+      required: [isActive]
